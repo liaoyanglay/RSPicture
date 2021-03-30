@@ -6,10 +6,12 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.ColorUtils
 import com.dizzylay.rspicture.R
 
 
@@ -22,7 +24,7 @@ class PictureActivity : AppCompatActivity() {
 
     private val hidePart2Runnable = Runnable {
         // Delayed removal of status and navigation bar
-        fullscreenContent.systemUiVisibility =
+        window.decorView.systemUiVisibility =
             View.SYSTEM_UI_FLAG_LOW_PROFILE or
                     View.SYSTEM_UI_FLAG_FULLSCREEN or
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
@@ -52,6 +54,8 @@ class PictureActivity : AppCompatActivity() {
         setContentView(R.layout.activity_picture)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.hide()
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.statusBarColor = resources.getColor(R.color.black_overlay, null)
 
         fullscreenContent = findViewById(R.id.fullscreen_content)
         fullscreenContent.setOnClickListener { toggle() }
@@ -62,6 +66,15 @@ class PictureActivity : AppCompatActivity() {
         if (imagePath.isNotEmpty()) {
             val bitmap = BitmapFactory.decodeFile(imagePath)
             fullscreenContent.setImageBitmap(bitmap)
+        }
+
+    }
+
+    private fun setStatusBarLight(backgroundColor: Int) {
+        if (ColorUtils.calculateLuminance(backgroundColor) >= 0.5) {
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        } else {
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         }
     }
 
@@ -96,9 +109,8 @@ class PictureActivity : AppCompatActivity() {
 
     private fun show() {
         // Show the system bar
-        fullscreenContent.systemUiVisibility =
-            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        window.decorView.systemUiVisibility =
+            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
         isFullscreen = true
 
         // Schedule a runnable to display UI elements after a delay

@@ -1,18 +1,15 @@
 package com.dizzylay.rspicture.ui
 
 import android.Manifest
-import android.content.ClipData
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -20,7 +17,9 @@ import androidx.core.content.FileProvider
 import com.dizzylay.rspicture.databinding.ActivityMainBinding
 import com.dizzylay.rspicture.util.FileUtil
 import com.dizzylay.rspicture.util.ToastUtil
+import me.minetsh.imaging.IMGEditActivity
 import java.io.File
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -36,12 +35,13 @@ class MainActivity : AppCompatActivity() {
 //            System.loadLibrary("native-lib")
 //        }
 
-        const val ALBUM_REQUEST_CODE: Int = 0
-        const val SHOOT_REQUEST_CODE: Int = 1
+        const val REQ_PERMISSION_TAKE_PHOTO: Int = 0
+        const val REQ_PERMISSION_WRITE_SDCARD: Int = 1
 
-        const val TAKE_PHOTO_PERMISSION_REQUEST_CODE: Int = 0
-        const val WRITE_SDCARD_PERMISSION_REQUEST_CODE: Int = 1
-        const val CROP_PHOTO_REQUEST_CODE: Int = 2
+        const val REQ_IMAGE_SELECT: Int = 0
+        const val REQ_TAKE_PHOTO: Int = 1
+        const val REQ_IMAGE_CROP: Int = 2
+        const val REQ_IMAGE_EDIT: Int = 3
 
         const val FILE_PROVIDER_AUTHORITY = "com.dizzylay.rspicture.fileprovider"
     }
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                WRITE_SDCARD_PERMISSION_REQUEST_CODE
+                REQ_PERMISSION_WRITE_SDCARD
             )
         }
 
@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
     private val albumClickListener = View.OnClickListener {
         val choiceFromAlbumIntent = Intent(Intent.ACTION_GET_CONTENT)
         choiceFromAlbumIntent.type = "image/*"
-        startActivityForResult(choiceFromAlbumIntent, ALBUM_REQUEST_CODE)
+        startActivityForResult(choiceFromAlbumIntent, REQ_IMAGE_SELECT)
     }
 
     private val shootClickListener = View.OnClickListener {
@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
         ) {
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(Manifest.permission.CAMERA), TAKE_PHOTO_PERMISSION_REQUEST_CODE
+                arrayOf(Manifest.permission.CAMERA), REQ_PERMISSION_TAKE_PHOTO
             )
         } else {
             startCamera()
@@ -112,7 +112,7 @@ class MainActivity : AppCompatActivity() {
         val takePhotoIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         // 设置拍照所得照片的输出目录
         takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-        startActivityForResult(takePhotoIntent, SHOOT_REQUEST_CODE)
+        startActivityForResult(takePhotoIntent, REQ_TAKE_PHOTO)
     }
 
     private fun startDraw() {
@@ -140,7 +140,7 @@ class MainActivity : AppCompatActivity() {
         cropPhotoIntent.putExtra("scaleUpIfNeeded", true)
         cropPhotoIntent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString())
         cropPhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputUri)
-        startActivityForResult(cropPhotoIntent, CROP_PHOTO_REQUEST_CODE)
+        startActivityForResult(cropPhotoIntent, REQ_IMAGE_CROP)
     }
 
     override fun onRequestPermissionsResult(
@@ -149,14 +149,14 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         when (requestCode) {
-            TAKE_PHOTO_PERMISSION_REQUEST_CODE -> {
+            REQ_PERMISSION_TAKE_PHOTO -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     startCamera();
                 } else {
                     ToastUtil.makeShort(this, "拍照权限被拒绝")
                 }
             }
-            WRITE_SDCARD_PERMISSION_REQUEST_CODE -> {
+            REQ_PERMISSION_WRITE_SDCARD -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_DENIED) {
                     ToastUtil.makeShort(this, "读写内存卡内容权限被拒绝")
                 }
@@ -167,22 +167,39 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode != RESULT_OK) {
-            ToastUtil.makeShort(this, "未选择照片")
             return
         }
-        var imagePath: String? = null
+        var imagePath: String?
         when (requestCode) {
-            ALBUM_REQUEST_CODE -> {
+            REQ_IMAGE_SELECT -> {
                 data?.data?.let {
-                    cropPhoto(it)
+//                    cropPhoto(it)
                     imagePath = FileUtil.getPathFromUri(this, it)
+                    startActivityForResult(
+                        Intent(this, IMGEditActivity::class.java)
+                            .putExtra(IMGEditActivity.EXTRA_IMAGE_PATH, imagePath)
+                            .putExtra(
+                                IMGEditActivity.EXTRA_IMAGE_SAVE_PATH,
+                                File(externalCacheDir, UUID.randomUUID().toString() + ".jpg").path
+                            ),
+                        REQ_IMAGE_EDIT
+                    )
                 }
             }
-            SHOOT_REQUEST_CODE -> {
-                cropPhoto(photoUri)
+            REQ_TAKE_PHOTO -> {
+//                cropPhoto(photoUri)
                 imagePath = photoPath
+                startActivityForResult(
+                    Intent(this, IMGEditActivity::class.java)
+                        .putExtra(IMGEditActivity.EXTRA_IMAGE_PATH, photoPath)
+                        .putExtra(
+                            IMGEditActivity.EXTRA_IMAGE_SAVE_PATH,
+                            File(externalCacheDir, UUID.randomUUID().toString() + ".jpg").path
+                        ),
+                    REQ_IMAGE_EDIT
+                )
             }
-            CROP_PHOTO_REQUEST_CODE -> {
+            REQ_IMAGE_CROP -> {
                 val file = File(photoOutputPath)
                 if (file.exists()) {
                     imagePath = file.path
@@ -190,6 +207,9 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     ToastUtil.makeShort(this, "找不到照片")
                 }
+            }
+            REQ_IMAGE_EDIT -> {
+                ToastUtil.makeShort(this, "图片编辑完成")
             }
         }
 //        if (imagePath != null) {
