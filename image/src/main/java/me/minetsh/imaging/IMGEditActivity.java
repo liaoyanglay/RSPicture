@@ -172,4 +172,13 @@ public class IMGEditActivity extends IMGEditBaseActivity {
     public void onColorChanged(int checkedColor) {
         mImgView.setPenColor(checkedColor);
     }
+
+    @Override
+    public void onBackPressed() {
+        if (mImgView.getMode() == IMGMode.CLIP) {
+            onCancelClipClick();
+            return;
+        }
+        super.onBackPressed();
+    }
 }

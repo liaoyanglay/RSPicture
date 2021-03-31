@@ -77,7 +77,7 @@ public class IMGImage {
      */
     private IMGMode mMode = IMGMode.NONE;
 
-    private boolean isFreezing = mMode == IMGMode.CLIP;
+    private boolean isFreezing = false;
 
     /**
      * 可视区域，无Scroll 偏移区域
@@ -272,13 +272,15 @@ public class IMGImage {
         M.setScale(getScale(), getScale());
         M.postTranslate(mFrame.left, mFrame.top);
         M.mapRect(mClipFrame, mBackupClipFrame);
+        setRotate(getRotate() % 360);
         setTargetRotate(mBackupClipRotate);
         isRequestToBaseFitting = true;
     }
 
     public void resetClip() {
         // TODO 就近旋转
-        setTargetRotate(getRotate() - getRotate() % 360);
+        setRotate(getRotate() % 360);
+        setTargetRotate(0);
         mClipFrame.set(mFrame);
         mClipWin.reset(mClipFrame, getTargetRotate());
     }
@@ -290,8 +292,8 @@ public class IMGImage {
 
         if (mMode == IMGMode.MOSAIC) {
 
-            int w = Math.round(mImage.getWidth() / 64f);
-            int h = Math.round(mImage.getHeight() / 64f);
+            int w = Math.round(mImage.getWidth() / 16f);
+            int h = Math.round(mImage.getHeight() / 16f);
 
             w = Math.max(w, 8);
             h = Math.max(h, 8);
@@ -346,10 +348,6 @@ public class IMGImage {
 
                 // cFrame要是一个暂时clipFrame
                 if (mClipWin.isHoming()) {
-//
-//                    M.mapRect(cFrame, mClipFrame);
-
-//                    mClipWin
                     // TODO 偏移中心
 
                     M.setRotate(getTargetRotate() - getRotate(), mClipFrame.centerX(), mClipFrame.centerY());
@@ -516,7 +514,6 @@ public class IMGImage {
     }
 
     public void onDrawImage(Canvas canvas) {
-
         // 裁剪区域
         canvas.clipRect(mClipWin.isClipping() ? mFrame : mClipFrame);
 
@@ -734,7 +731,6 @@ public class IMGImage {
         isDrawClip = true;
         if (mMode == IMGMode.CLIP) {
             // 开启裁剪模式
-
             boolean clip = !isAnimCanceled;
 
             mClipWin.setHoming(false);
