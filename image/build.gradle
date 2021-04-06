@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 29
+    buildToolsVersion '30.0.3'
 
     resourcePrefix "image_"
 
@@ -10,6 +11,9 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
+
+        renderscriptTargetApi 18
+        renderscriptSupportModeEnabled false
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -30,11 +34,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
-    implementation "androidx.appcompat:appcompat:1.1.0"
+    implementation "androidx.appcompat:appcompat:1.2.0"
     implementation "androidx.recyclerview:recyclerview:1.1.0"
 
     implementation 'com.facebook.fresco:fresco:1.8.1'
-    //    compile 'com.facebook.fresco:animated-gif:1.7.1'
-    //    compile 'com.facebook.fresco:animated-webp:1.7.1'
-    //    compile 'com.facebook.fresco:webpsupport:1.7.1'
 }

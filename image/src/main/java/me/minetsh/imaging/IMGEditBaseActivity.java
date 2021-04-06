@@ -10,6 +10,7 @@ import android.widget.ViewSwitcher;
 
 import me.minetsh.imaging.core.IMGMode;
 import me.minetsh.imaging.core.IMGText;
+import me.minetsh.imaging.rs.RSTool;
 import me.minetsh.imaging.view.IMGColorGroup;
 import me.minetsh.imaging.view.IMGView;
 
@@ -18,6 +19,7 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
         DialogInterface.OnShowListener, DialogInterface.OnDismissListener {
 
     protected IMGView mImgView;
+    protected Bitmap mOriginalBitmap;
 
     private RadioGroup mModeGroup;
     private IMGColorGroup mColorGroup;
@@ -35,11 +37,11 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bitmap bitmap = getBitmap();
-        if (bitmap != null) {
+        mOriginalBitmap = getBitmap();
+        if (mOriginalBitmap != null) {
             setContentView(R.layout.image_edit_activity);
             initViews();
-            mImgView.setImageBitmap(bitmap);
+            mImgView.setImageBitmap(RSTool.gray(this, mOriginalBitmap));
         } else finish();
     }
 
@@ -81,6 +83,8 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
             onResetClipClick();
         } else if (vid == R.id.ib_clip_rotate) {
             onRotateClipClick();
+        } else if (vid == R.id.btn_filter) {
+            onFilterClick();
         }
     }
 
@@ -160,6 +164,8 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
     public abstract void onRotateClipClick();
 
     public abstract void onColorChanged(int checkedColor);
+
+    public abstract void onFilterClick();
 
     @Override
     public abstract void onText(IMGText text);

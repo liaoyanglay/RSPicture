@@ -174,6 +174,11 @@ public class IMGEditActivity extends IMGEditBaseActivity {
     }
 
     @Override
+    public void onFilterClick() {
+
+    }
+
+    @Override
     public void onBackPressed() {
         if (mImgView.getMode() == IMGMode.CLIP) {
             onCancelClipClick();

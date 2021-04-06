@@ -193,6 +193,21 @@
             android:src="@drawable/image_btn_clip"
             android:textColor="#FFF" />
 
+        <Space
+            android:layout_width="@dimen/image_mode_space"
+            android:layout_height="wrap_content" />
+
+        <ImageButton
+            android:id="@+id/btn_filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:contentDescription="@string/image_clip"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:src="@drawable/image_ic_filter"
+            android:textColor="#FFF" />
+
     </RadioGroup>
 
 </LinearLayout>
