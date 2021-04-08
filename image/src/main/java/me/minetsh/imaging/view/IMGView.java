@@ -58,7 +58,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
 
     private Paint mMosaicPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     {
         // 涂鸦画刷

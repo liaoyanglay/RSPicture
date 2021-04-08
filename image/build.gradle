@@ -7,7 +7,7 @@ android {
     resourcePrefix "image_"
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"

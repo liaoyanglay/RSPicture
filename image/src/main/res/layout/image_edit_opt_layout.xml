@@ -88,7 +88,6 @@
                     android:layout_width="@dimen/image_color"
                     android:layout_height="@dimen/image_color"
                     android:layout_margin="@dimen/image_color_margin"
-
                     app:image_color="@color/image_color_white" />
 
                 <me.minetsh.imaging.view.IMGColorRadio
@@ -202,12 +201,83 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@null"
-            android:contentDescription="@string/image_clip"
+            android:contentDescription="@string/image_filter"
             android:gravity="center"
             android:onClick="onClick"
-            android:src="@drawable/image_ic_filter"
+            android:src="@drawable/image_btn_filter"
             android:textColor="#FFF" />
 
     </RadioGroup>
+
+    <HorizontalScrollView
+        android:id="@+id/layout_filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/image_color_black_trans"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <RadioGroup
+            android:id="@+id/rg_filters"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkedButton="@id/btn_origin"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="20dp">
+
+            <RadioButton
+                android:id="@+id/btn_origin"
+                android:layout_width="81dp"
+                android:layout_height="81dp"
+                android:background="@drawable/img_filter_example"
+                android:button="@null"
+                android:foreground="@drawable/image_bg_filter_button"
+                android:gravity="bottom|center_horizontal"
+                android:padding="4dp"
+                android:text="@string/image_original_picture"
+                android:textColor="@color/image_color_white"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <Space
+                android:layout_width="@dimen/image_mode_space"
+                android:layout_height="wrap_content" />
+
+            <RadioButton
+                android:id="@+id/btn_black_white"
+                android:layout_width="81dp"
+                android:layout_height="81dp"
+                android:background="@drawable/img_filter_example"
+                android:button="@null"
+                android:foreground="@drawable/image_bg_filter_button"
+                android:gravity="bottom|center_horizontal"
+                android:padding="4dp"
+                android:text="@string/image_black_white"
+                android:textColor="@color/image_color_white"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <Space
+                android:layout_width="@dimen/image_mode_space"
+                android:layout_height="wrap_content" />
+
+            <RadioButton
+                android:id="@+id/btn_black_gold"
+                android:layout_width="81dp"
+                android:layout_height="81dp"
+                android:background="@drawable/img_filter_example"
+                android:button="@null"
+                android:foreground="@drawable/image_bg_filter_button"
+                android:gravity="bottom|center_horizontal"
+                android:padding="4dp"
+                android:text="@string/image_black_gold"
+                android:textColor="@color/image_color_white"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+        </RadioGroup>
+
+    </HorizontalScrollView>
 
 </LinearLayout>

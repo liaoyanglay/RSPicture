@@ -290,23 +290,20 @@ public class IMGImage {
             return;
         }
 
-        if (mMode == IMGMode.MOSAIC) {
+        int w = Math.round(mImage.getWidth() / 16f);
+        int h = Math.round(mImage.getHeight() / 16f);
 
-            int w = Math.round(mImage.getWidth() / 16f);
-            int h = Math.round(mImage.getHeight() / 16f);
+        w = Math.max(w, 8);
+        h = Math.max(h, 8);
 
-            w = Math.max(w, 8);
-            h = Math.max(h, 8);
-
-            // 马赛克画刷
-            if (mMosaicPaint == null) {
-                mMosaicPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-                mMosaicPaint.setFilterBitmap(false);
-                mMosaicPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-            }
-
-            mMosaicImage = Bitmap.createScaledBitmap(mImage, w, h, false);
+        // 马赛克画刷
+        if (mMosaicPaint == null) {
+            mMosaicPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            mMosaicPaint.setFilterBitmap(false);
+            mMosaicPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         }
+
+        mMosaicImage = Bitmap.createScaledBitmap(mImage, w, h, false);
     }
 
     private void onImageChanged() {

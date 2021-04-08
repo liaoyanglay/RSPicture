@@ -35,7 +35,34 @@ public class RSTool {
         ScriptC_Gray script = new ScriptC_Gray(rs);
 
         // 对每一个像素执行 root 方法
-        script.forEach_root(allIn, allOut);
+        script.forEach_gray(allIn, allOut);
+
+        // 将执行结果复制到输出 bitmap 上
+        allOut.copyTo(outBitmap);
+
+        // 释放资源
+        rs.destroy();
+        return outBitmap;
+    }
+
+    public static Bitmap blackGold(@NonNull Context context, @NonNull Bitmap bitmap) {
+        // 创建输出 bitamp
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        Bitmap outBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        // 创建 RenderScript 对象
+        RenderScript rs = RenderScript.create(context);
+
+        // 创建输入、输出 Allocation
+        Allocation allIn = Allocation.createFromBitmap(rs, bitmap);
+        Allocation allOut = Allocation.createFromBitmap(rs, outBitmap);
+
+        // 创建我们在上面定义的 script
+        ScriptC_Gray script = new ScriptC_Gray(rs);
+
+        // 对每一个像素执行 root 方法
+        script.forEach_blackGold(allIn, allOut);
 
         // 将执行结果复制到输出 bitmap 上
         allOut.copyTo(outBitmap);

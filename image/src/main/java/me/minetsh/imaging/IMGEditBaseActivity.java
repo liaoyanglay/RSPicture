@@ -20,12 +20,15 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
 
     protected IMGView mImgView;
     protected Bitmap mOriginalBitmap;
+    protected Bitmap mCurrBitmap;
 
     private RadioGroup mModeGroup;
     private IMGColorGroup mColorGroup;
     private IMGTextEditDialog mTextDialog;
     private View mLayoutOpSub;
     private ViewSwitcher mOpSwitcher, mOpSubSwitcher;
+    private View mLayoutFilter;
+    private RadioGroup mFilterGroup;
 
     public static final int OP_HIDE = -1;
     public static final int OP_NORMAL = 0;
@@ -41,21 +44,23 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
         if (mOriginalBitmap != null) {
             setContentView(R.layout.image_edit_activity);
             initViews();
-            mImgView.setImageBitmap(RSTool.gray(this, mOriginalBitmap));
+            mImgView.setImageBitmap(mOriginalBitmap);
+            mCurrBitmap = mOriginalBitmap;
         } else finish();
     }
 
     private void initViews() {
         mImgView = findViewById(R.id.image_canvas);
         mModeGroup = findViewById(R.id.rg_modes);
-
         mOpSwitcher = findViewById(R.id.vs_op);
         mOpSubSwitcher = findViewById(R.id.vs_op_sub);
-
         mColorGroup = findViewById(R.id.cg_colors);
-        mColorGroup.setOnCheckedChangeListener(this);
-
         mLayoutOpSub = findViewById(R.id.layout_op_sub);
+        mLayoutFilter = findViewById(R.id.layout_filter);
+        mFilterGroup = findViewById(R.id.rg_filters);
+
+        mColorGroup.setOnCheckedChangeListener(this);
+        mFilterGroup.setOnCheckedChangeListener(mFilterChangeListener);
     }
 
     @Override
@@ -84,7 +89,7 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
         } else if (vid == R.id.ib_clip_rotate) {
             onRotateClipClick();
         } else if (vid == R.id.btn_filter) {
-            onFilterClick();
+            onModeClick(IMGMode.FILTER);
         }
     }
 
@@ -99,9 +104,15 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
                 mModeGroup.check(R.id.rb_mosaic);
                 setOpSubDisplay(OP_SUB_MOSAIC);
                 break;
+            case FILTER:
+                mModeGroup.clearCheck();
+                setOpSubDisplay(OP_HIDE);
+                setFilterDisplay(true);
+                break;
             case NONE:
                 mModeGroup.clearCheck();
                 setOpSubDisplay(OP_HIDE);
+                setFilterDisplay(false);
                 break;
         }
     }
@@ -120,6 +131,23 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
         onColorChanged(mColorGroup.getCheckColor());
     }
 
+    private final RadioGroup.OnCheckedChangeListener mFilterChangeListener = new RadioGroup.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(RadioGroup group, int checkedId) {
+            if (mCurrBitmap != mOriginalBitmap) {
+                mCurrBitmap.recycle();
+            }
+            if (checkedId == R.id.btn_origin) {
+                mCurrBitmap = mOriginalBitmap;
+            } else if (checkedId == R.id.btn_black_white) {
+                mCurrBitmap = RSTool.gray(IMGEditBaseActivity.this, mOriginalBitmap);
+            } else if (checkedId == R.id.btn_black_gold) {
+                mCurrBitmap = RSTool.blackGold(IMGEditBaseActivity.this, mOriginalBitmap);
+            }
+            mImgView.setImageBitmap(mCurrBitmap);
+        }
+    };
+
     public void setOpDisplay(int op) {
         if (op >= 0) {
             mOpSwitcher.setDisplayedChild(op);
@@ -132,6 +160,16 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
         } else {
             mOpSubSwitcher.setDisplayedChild(opSub);
             mLayoutOpSub.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void setFilterDisplay(boolean display) {
+        if (display) {
+            mModeGroup.setVisibility(View.GONE);
+            mLayoutFilter.setVisibility(View.VISIBLE);
+        } else {
+            mModeGroup.setVisibility(View.VISIBLE);
+            mLayoutFilter.setVisibility(View.GONE);
         }
     }
 
@@ -164,8 +202,6 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
     public abstract void onRotateClipClick();
 
     public abstract void onColorChanged(int checkedColor);
-
-    public abstract void onFilterClick();
 
     @Override
     public abstract void onText(IMGText text);

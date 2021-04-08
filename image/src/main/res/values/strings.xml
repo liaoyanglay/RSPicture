@@ -4,5 +4,8 @@
     <string name="image_enable_storage_permission">开启存储权限</string>
 
     <string name="image_enable_storage_tips">相册功能需要使用到存储权限，请在设置中开启此应用的存储权限</string>
+    <string name="image_original_picture">原图</string>
+    <string name="image_black_white">黑白</string>
+    <string name="image_black_gold">黑金</string>
 
 </resources>
