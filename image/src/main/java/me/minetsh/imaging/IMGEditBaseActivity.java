@@ -143,6 +143,14 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
                 mCurrBitmap = RSTool.gray(IMGEditBaseActivity.this, mOriginalBitmap);
             } else if (checkedId == R.id.btn_black_gold) {
                 mCurrBitmap = RSTool.blackGold(IMGEditBaseActivity.this, mOriginalBitmap);
+            } else if (checkedId == R.id.btn_invert) {
+                mCurrBitmap = RSTool.invert(IMGEditBaseActivity.this, mOriginalBitmap);
+            } else if (checkedId == R.id.btn_blur) {
+                mCurrBitmap = RSTool.blur(IMGEditBaseActivity.this, mOriginalBitmap);
+            } else if (checkedId == R.id.btn_nostalgia) {
+                mCurrBitmap = RSTool.nostalgia(IMGEditBaseActivity.this, mOriginalBitmap);
+            } else if (checkedId == R.id.btn_comic) {
+                mCurrBitmap = RSTool.comic(IMGEditBaseActivity.this, mOriginalBitmap);
             }
             mImgView.setImageBitmap(mCurrBitmap);
         }

@@ -214,6 +214,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/image_color_black_trans"
+        android:scrollbars="none"
         android:visibility="gone"
         tools:visibility="visible">
 
@@ -272,6 +273,78 @@
                 android:gravity="bottom|center_horizontal"
                 android:padding="4dp"
                 android:text="@string/image_black_gold"
+                android:textColor="@color/image_color_white"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <Space
+                android:layout_width="@dimen/image_mode_space"
+                android:layout_height="wrap_content" />
+
+            <RadioButton
+                android:id="@+id/btn_invert"
+                android:layout_width="81dp"
+                android:layout_height="81dp"
+                android:background="@drawable/img_filter_example"
+                android:button="@null"
+                android:foreground="@drawable/image_bg_filter_button"
+                android:gravity="bottom|center_horizontal"
+                android:padding="4dp"
+                android:text="@string/image_invert"
+                android:textColor="@color/image_color_white"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <Space
+                android:layout_width="@dimen/image_mode_space"
+                android:layout_height="wrap_content" />
+
+            <RadioButton
+                android:id="@+id/btn_blur"
+                android:layout_width="81dp"
+                android:layout_height="81dp"
+                android:background="@drawable/img_filter_example"
+                android:button="@null"
+                android:foreground="@drawable/image_bg_filter_button"
+                android:gravity="bottom|center_horizontal"
+                android:padding="4dp"
+                android:text="@string/image_blur"
+                android:textColor="@color/image_color_white"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <Space
+                android:layout_width="@dimen/image_mode_space"
+                android:layout_height="wrap_content" />
+
+            <RadioButton
+                android:id="@+id/btn_nostalgia"
+                android:layout_width="81dp"
+                android:layout_height="81dp"
+                android:background="@drawable/img_filter_example"
+                android:button="@null"
+                android:foreground="@drawable/image_bg_filter_button"
+                android:gravity="bottom|center_horizontal"
+                android:padding="4dp"
+                android:text="@string/image_nostalgia"
+                android:textColor="@color/image_color_white"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <Space
+                android:layout_width="@dimen/image_mode_space"
+                android:layout_height="wrap_content" />
+
+            <RadioButton
+                android:id="@+id/btn_comic"
+                android:layout_width="81dp"
+                android:layout_height="81dp"
+                android:background="@drawable/img_filter_example"
+                android:button="@null"
+                android:foreground="@drawable/image_bg_filter_button"
+                android:gravity="bottom|center_horizontal"
+                android:padding="4dp"
+                android:text="@string/image_comic"
                 android:textColor="@color/image_color_white"
                 android:textSize="13sp"
                 android:textStyle="bold" />
