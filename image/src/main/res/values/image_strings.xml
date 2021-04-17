@@ -4,8 +4,9 @@
     <string name="image_text">文字</string>
     <string name="image_mosaic">马赛克</string>
     <string name="image_clip">裁剪</string>
+    <string name="image_enhance">增强</string>
     <string name="image_filter">滤镜</string>
-    <string name="image_reset">还原</string>
+    <string name="image_reset">重置</string>
     <string name="image_done">完成</string>
     <string name="image_cancel">取消</string>
     <string name="image_rotate">旋转</string>
@@ -13,6 +14,18 @@
     <string name="image_mosaic_tip">请直接在图片上涂抹虚化</string>
     <string name="image_undo">撤销</string>
     <string name="image_all_photo">所有照片</string>
-    <string name="image_original">原图</string>
     <string name="image_preview">预览</string>
+
+    <string name="image_original_picture">原图</string>
+    <string name="image_black_white">黑白</string>
+    <string name="image_black_gold">黑金</string>
+    <string name="image_invert">反转</string>
+    <string name="image_blur">模糊</string>
+    <string name="image_nostalgia">怀旧</string>
+    <string name="image_comic">漫画</string>
+    <string name="image_brightness">亮度</string>
+    <string name="image_contrast">对比度</string>
+    <string name="image_saturation">饱和度</string>
+    <string name="image_hue">色调</string>
+
 </resources>

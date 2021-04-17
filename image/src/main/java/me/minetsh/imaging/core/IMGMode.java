@@ -9,5 +9,6 @@ public enum IMGMode {
     DOODLE,
     MOSAIC,
     CLIP,
-    FILTER
+    FILTER,
+    ENHANCE
 }

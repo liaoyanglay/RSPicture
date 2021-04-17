@@ -1,5 +1,6 @@
 #pragma version(1)
-#pragma rs java_package_name(me.minetsh.imaging.rs)
+#pragma rs java_package_name(com.dizzylay.rspicture.rs)
+#pragma rs_fp_relaxed
 
 void init() {
 }
@@ -7,7 +8,8 @@ void init() {
 void root(const uchar4 *in, uchar4 *out, uint32_t x, uint32_t y) {
 }
 
-uchar4 RS_KERNEL gray(uchar4 in, uint32_t x, uint32_t y) {
+// 灰度变换
+uchar4 RS_KERNEL grayscale(uchar4 in, uint32_t x, uint32_t y) {
     uchar4 out = in;
 
     // 快，但并不是真正意义的去色
@@ -29,6 +31,7 @@ uchar4 RS_KERNEL blackGold(uchar4 in, uint32_t x, uint32_t y) {
     return out;
 }
 
+// 色彩反转
 uchar4 RS_KERNEL invert(uchar4 in) {
     uchar4 out = in;
     out.r = 255 - in.r;
@@ -59,4 +62,17 @@ uchar4 RS_KERNEL comic(uchar4 in) {
     out.g = G < 255 ? G : 255;
     out.b = B < 255 ? B : 255;
     return out;
+}
+
+const static float3 gMonoMult = {0.299f, 0.587f, 0.114f};
+
+float saturationValue = 1.f;
+
+// saturation manipulation.
+uchar4 RS_KERNEL saturation(uchar4 in) {
+    float4 f4 = rsUnpackColor8888(in);
+    float3 result = dot(f4.rgb, gMonoMult);
+    result = mix(result, f4.rgb, saturationValue);
+
+    return rsPackColorTo8888(result);
 }

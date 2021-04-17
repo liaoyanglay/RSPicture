@@ -10,39 +10,42 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="20"
-        android:gravity="bottom"
         android:background="@drawable/image_bg_bottom"
+        android:gravity="bottom"
         android:orientation="vertical">
 
         <ImageButton
             android:id="@+id/ib_clip_rotate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
             android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
             android:background="@null"
             android:contentDescription="@string/image_rotate"
             android:onClick="onClick"
             android:src="@drawable/image_btn_rotate" />
 
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="20dp"
-            android:paddingTop="16dp">
+            android:orientation="horizontal">
 
             <ImageButton
                 android:id="@+id/ib_clip_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="40dp"
-                android:layout_marginStart="40dp"
+                android:layout_marginHorizontal="@dimen/image_done_cancel_margin_horizontal"
+                android:layout_marginVertical="@dimen/image_done_cancel_margin_vertical"
                 android:background="@null"
                 android:contentDescription="@string/image_cancel"
                 android:onClick="onClick"
+                android:padding="@dimen/image_done_cancel_padding"
                 android:src="@drawable/image_btn_cancel" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/tv_clip_reset"
@@ -52,23 +55,29 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:onClick="onClick"
+                android:padding="@dimen/image_done_cancel_padding"
                 android:text="@string/image_reset"
                 android:textColor="@color/image_color_text"
                 android:textSize="16sp" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
             <ImageButton
                 android:id="@+id/ib_clip_done"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|end"
-                android:layout_marginEnd="40dp"
-                android:layout_marginRight="40dp"
+                android:layout_marginHorizontal="@dimen/image_done_cancel_margin_horizontal"
+                android:layout_marginVertical="@dimen/image_done_cancel_margin_vertical"
                 android:background="@null"
                 android:contentDescription="@string/image_done"
                 android:onClick="onClick"
+                android:padding="@dimen/image_done_cancel_padding"
                 android:src="@drawable/image_btn_ok" />
 
-        </FrameLayout>
+        </LinearLayout>
 
     </LinearLayout>
 
