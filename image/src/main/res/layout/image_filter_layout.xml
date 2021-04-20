@@ -7,19 +7,6 @@
     android:background="@color/image_color_black_trans"
     android:orientation="vertical">
 
-    <SeekBar
-        android:id="@+id/skb_filter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginHorizontal="50dp"
-        android:layout_marginTop="12dp"
-        android:max="25"
-        android:progress="0"
-        android:progressTint="@color/image_color_accent"
-        android:thumbTint="@color/image_color_accent"
-        android:visibility="gone" />
-
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -100,24 +87,6 @@
                 android:gravity="bottom|center_horizontal"
                 android:padding="4dp"
                 android:text="@string/image_invert"
-                android:textColor="@color/image_color_white"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-            <Space
-                android:layout_width="@dimen/image_filter_space"
-                android:layout_height="wrap_content" />
-
-            <RadioButton
-                android:id="@+id/btn_blur"
-                android:layout_width="81dp"
-                android:layout_height="81dp"
-                android:background="@drawable/img_filter_example"
-                android:button="@null"
-                android:foreground="@drawable/image_bg_filter_button"
-                android:gravity="bottom|center_horizontal"
-                android:padding="4dp"
-                android:text="@string/image_blur"
                 android:textColor="@color/image_color_white"
                 android:textSize="13sp"
                 android:textStyle="bold" />

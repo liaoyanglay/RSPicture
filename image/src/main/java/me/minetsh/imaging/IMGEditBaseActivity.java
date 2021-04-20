@@ -5,23 +5,31 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.HorizontalScrollView;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.ViewSwitcher;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleOnSubscribe;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import me.minetsh.imaging.core.IMGMode;
 import me.minetsh.imaging.core.IMGText;
+import me.minetsh.imaging.rs.EnhanceMode;
 import me.minetsh.imaging.rs.RSTool;
 import me.minetsh.imaging.view.IMGColorGroup;
 import me.minetsh.imaging.view.IMGView;
 
 abstract class IMGEditBaseActivity extends Activity implements View.OnClickListener,
-        IMGTextEditDialog.Callback, RadioGroup.OnCheckedChangeListener,
+        IMGTextEditDialog.Callback, RadioGroup.OnCheckedChangeListener, SeekBar.OnSeekBarChangeListener,
         DialogInterface.OnShowListener, DialogInterface.OnDismissListener {
 
     protected IMGView mImgView;
     protected Bitmap mOriginalBitmap;
     protected Bitmap mCurrBitmap;
+    private Bitmap mEnhanceBitmap;
 
     private RSTool mRSTool;
 
@@ -34,8 +42,12 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
     private View mLayoutEnhance;
     private RadioGroup mFilterGroup;
     private RadioGroup mEnhanceGroup;
-    private SeekBar mFilterSeekBar;
     private SeekBar mEnhanceSeekBar;
+    private HorizontalScrollView mEnhanceScrollView;
+
+    private EnhanceMode mEnhanceMode;
+
+    private Disposable mImageUpdateDisposable;
 
     public static final int OP_HIDE = -1;
     public static final int OP_NORMAL = 0;
@@ -52,8 +64,9 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
             setContentView(R.layout.image_edit_activity);
             initViews();
             mImgView.setImageBitmap(mOriginalBitmap);
-            mCurrBitmap = mOriginalBitmap;
-            mRSTool = new RSTool(this, mCurrBitmap);
+            mRSTool = new RSTool(this, mOriginalBitmap);
+            mCurrBitmap = mOriginalBitmap.copy(mOriginalBitmap.getConfig(), true);
+            mEnhanceBitmap = Bitmap.createBitmap(mCurrBitmap.getWidth(), mCurrBitmap.getHeight(), mCurrBitmap.getConfig());
         } else finish();
     }
 
@@ -74,12 +87,13 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
         mFilterGroup = findViewById(R.id.rg_filters);
         mLayoutEnhance = findViewById(R.id.layout_enhance);
         mEnhanceGroup = findViewById(R.id.rg_enhance);
-        mFilterSeekBar = findViewById(R.id.skb_filter);
         mEnhanceSeekBar = findViewById(R.id.skb_enhance);
+        mEnhanceScrollView = findViewById(R.id.scroll_enhance);
 
         mColorGroup.setOnCheckedChangeListener(this);
         mFilterGroup.setOnCheckedChangeListener(mFilterChangeListener);
         mEnhanceGroup.setOnCheckedChangeListener(mEnhanceChangeListener);
+        mEnhanceSeekBar.setOnSeekBarChangeListener(this);
     }
 
     @Override
@@ -119,10 +133,10 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
         } else if (vid == R.id.btn_enhance_done) {
             onModeClick(IMGMode.ENHANCE);
         } else if (vid == R.id.btn_enhance_cancel) {
-            mEnhanceGroup.check(R.id.btn_brightness);
+            resetEnhance();
             onModeClick(IMGMode.ENHANCE);
         } else if (vid == R.id.tv_enhance_reset) {
-
+            resetEnhance();
         }
     }
 
@@ -170,15 +184,56 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
         onColorChanged(mColorGroup.getCheckColor());
     }
 
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if (fromUser) {
+            mEnhanceMode.updateParamFromProgress(progress);
+            updateImage();
+        }
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+    }
+
+    private void updateImage() {
+        if (mImageUpdateDisposable != null && !mImageUpdateDisposable.isDisposed()) {
+            mImageUpdateDisposable.dispose();
+        }
+        mImageUpdateDisposable = Single.create((SingleOnSubscribe<Bitmap>) emitter -> {
+            Bitmap bitmap = mRSTool.blur(EnhanceMode.BLUR.getParam(), mEnhanceBitmap);
+//            Bitmap bitmap = mRSTool.brightnessContrast(EnhanceMode.BRIGHTNESS.getParam(), EnhanceMode.CONTRAST.getParam(), mEnhanceBitmap);
+//            Bitmap bitmap = mRSTool.saturation(EnhanceMode.SATURATION.getParam(), mEnhanceBitmap);
+//            Bitmap bitmap = mRSTool.hue(EnhanceMode.HUE.getParam(), mEnhanceBitmap);
+//            Bitmap bitmap = mRSTool.emboss(EnhanceMode.EMBOSS.getParam(), mEnhanceBitmap);
+            emitter.onSuccess(bitmap);
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(bitmap -> {
+                    mEnhanceBitmap = mCurrBitmap;
+                    mCurrBitmap = bitmap;
+                    mImgView.setImageBitmap(bitmap);
+                }, Throwable::printStackTrace);
+    }
+
+    private void resetEnhance() {
+        EnhanceMode.BLUR.resetParam();
+        EnhanceMode.BRIGHTNESS.resetParam();
+        EnhanceMode.CONTRAST.resetParam();
+        EnhanceMode.SATURATION.resetParam();
+        EnhanceMode.HUE.resetParam();
+        mEnhanceSeekBar.setProgress(mEnhanceMode.getProgressFromParam());
+        updateImage();
+    }
+
     private final RadioGroup.OnCheckedChangeListener mFilterChangeListener = (group, checkedId) -> {
         if (mCurrBitmap != mOriginalBitmap) {
             mCurrBitmap.recycle();
-        }
-
-        if (checkedId == R.id.btn_blur) {
-            mFilterSeekBar.setVisibility(View.VISIBLE);
-        } else {
-            mFilterSeekBar.setVisibility(View.GONE);
         }
 
         if (checkedId == R.id.btn_origin) {
@@ -189,8 +244,6 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
             mCurrBitmap = mRSTool.blackGold();
         } else if (checkedId == R.id.btn_invert) {
             mCurrBitmap = mRSTool.invert();
-        } else if (checkedId == R.id.btn_blur) {
-            mCurrBitmap = mRSTool.blur();
         } else if (checkedId == R.id.btn_nostalgia) {
             mCurrBitmap = mRSTool.nostalgia();
         } else if (checkedId == R.id.btn_comic) {
@@ -201,14 +254,19 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
 
     private final RadioGroup.OnCheckedChangeListener mEnhanceChangeListener = (group, checkedId) -> {
         if (checkedId == R.id.btn_brightness) {
-
+            mEnhanceMode = EnhanceMode.BRIGHTNESS;
         } else if (checkedId == R.id.btn_contrast) {
-
+            mEnhanceMode = EnhanceMode.CONTRAST;
         } else if (checkedId == R.id.btn_saturation) {
-
+            mEnhanceMode = EnhanceMode.SATURATION;
         } else if (checkedId == R.id.btn_hue) {
-
+            mEnhanceMode = EnhanceMode.HUE;
+        } else if (checkedId == R.id.btn_blur) {
+            mEnhanceMode = EnhanceMode.BLUR;
+        } else if (checkedId == R.id.btn_emboss) {
+            mEnhanceMode = EnhanceMode.EMBOSS;
         }
+        mEnhanceSeekBar.setProgress(mEnhanceMode.getProgressFromParam());
     };
 
     public void setOpDisplay(int op) {
@@ -240,6 +298,10 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
         if (display) {
             mModeGroup.setVisibility(View.GONE);
             mLayoutEnhance.setVisibility(View.VISIBLE);
+            mEnhanceMode = EnhanceMode.BRIGHTNESS;
+            mEnhanceGroup.check(R.id.btn_brightness);
+            mEnhanceSeekBar.setProgress(EnhanceMode.BRIGHTNESS.getProgressFromParam());
+            mEnhanceScrollView.scrollTo(0, 0);
         } else {
             mModeGroup.setVisibility(View.VISIBLE);
             mLayoutEnhance.setVisibility(View.GONE);

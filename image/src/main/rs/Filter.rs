@@ -9,7 +9,7 @@ void root(const uchar4 *in, uchar4 *out, uint32_t x, uint32_t y) {
 }
 
 // 灰度变换
-uchar4 RS_KERNEL grayscale(uchar4 in, uint32_t x, uint32_t y) {
+uchar4 RS_KERNEL grayscale(uchar4 in) {
     uchar4 out = in;
 
     // 快，但并不是真正意义的去色
@@ -21,7 +21,7 @@ uchar4 RS_KERNEL grayscale(uchar4 in, uint32_t x, uint32_t y) {
 }
 
 // 黑金色转换
-uchar4 RS_KERNEL blackGold(uchar4 in, uint32_t x, uint32_t y) {
+uchar4 RS_KERNEL blackGold(uchar4 in) {
     uchar4 out = in;
 
     if ((in.r < in.b) && (in.g < in.b)) {

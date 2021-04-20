@@ -27,5 +27,6 @@
     <string name="image_contrast">对比度</string>
     <string name="image_saturation">饱和度</string>
     <string name="image_hue">色调</string>
+    <string name="image_emboss">浮雕</string>
 
 </resources>

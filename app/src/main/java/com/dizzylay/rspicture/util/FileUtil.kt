@@ -1,5 +1,6 @@
 package com.dizzylay.rspicture.util
 
+import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
@@ -52,6 +53,7 @@ object FileUtil {
     * @param uri The Uri to query.
     * @author paulburke
     */
+    @SuppressLint("ObsoleteSdkInt")
     fun getPathFromUri(context: Context, uri: Uri): String? {
         val isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
 
