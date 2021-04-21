@@ -4,7 +4,7 @@
     <dimen name="image_color">28dp</dimen>
     <dimen name="image_color_margin">6dp</dimen>
     <dimen name="image_mode_space">20dp</dimen>
-    <dimen name="image_filter_space">18dp</dimen>
+    <dimen name="image_filter_space">15dp</dimen>
     <dimen name="image_done_cancel_margin_horizontal">32dp</dimen>
     <dimen name="image_done_cancel_margin_vertical">12dp</dimen>
     <dimen name="image_done_cancel_padding">8dp</dimen>

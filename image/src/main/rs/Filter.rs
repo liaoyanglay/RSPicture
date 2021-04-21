@@ -2,6 +2,8 @@
 #pragma rs java_package_name(com.dizzylay.rspicture.rs)
 #pragma rs_fp_relaxed
 
+static const float3 grayWeight = {0.299f, 0.587f, 0.114f};
+
 void init() {
 }
 
@@ -10,14 +12,10 @@ void root(const uchar4 *in, uchar4 *out, uint32_t x, uint32_t y) {
 
 // 灰度变换
 uchar4 RS_KERNEL grayscale(uchar4 in) {
-    uchar4 out = in;
+    float4 f4 = rsUnpackColor8888(in);
+    float3 result = dot(f4.rgb, grayWeight);
 
-    // 快，但并不是真正意义的去色
-    // out.r = out.g = out.b = (in.r + in.g + in.b) / 3;
-
-    // 慢，但是是真正的去色
-    out.r = out.g = out.b = (in.r * 299 + in.g * 587 + in.b * 114 + 500) / 1000;
-    return out;
+    return rsPackColorTo8888(result);
 }
 
 // 黑金色转换
@@ -62,17 +60,4 @@ uchar4 RS_KERNEL comic(uchar4 in) {
     out.g = G < 255 ? G : 255;
     out.b = B < 255 ? B : 255;
     return out;
-}
-
-const static float3 gMonoMult = {0.299f, 0.587f, 0.114f};
-
-float saturationValue = 1.f;
-
-// saturation manipulation.
-uchar4 RS_KERNEL saturation(uchar4 in) {
-    float4 f4 = rsUnpackColor8888(in);
-    float3 result = dot(f4.rgb, gMonoMult);
-    result = mix(result, f4.rgb, saturationValue);
-
-    return rsPackColorTo8888(result);
 }

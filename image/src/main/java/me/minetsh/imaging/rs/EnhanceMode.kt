@@ -9,8 +9,8 @@ import kotlin.math.PI
  */
 enum class EnhanceMode(private val MIN: Float, private val MAX: Float, private val default: Float) {
     BLUR(0f, 25f, 0f),
-    BRIGHTNESS(-0.25f, 0.25f, 0f),
-    CONTRAST(-0.25f, 0.25f, 0f),
+    BRIGHTNESS(-0.3f, 0.3f, 0f),
+    CONTRAST(-0.3f, 0.3f, 0f),
     SATURATION(0f, 2f, 1f),
     HUE((-PI).toFloat(), PI.toFloat(), 0f),
     EMBOSS(0f, 2f, 0f);

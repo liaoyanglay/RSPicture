@@ -102,6 +102,10 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
         invalidate();
     }
 
+    public Bitmap getImageBitmap() {
+        return mImage.getBitmap();
+    }
+
     public void setMode(IMGMode mode) {
         // 保存现在的编辑模式
         mPreMode = mImage.getMode();

@@ -127,11 +127,18 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
             onModeClick(IMGMode.ENHANCE);
         } else if (vid == R.id.btn_filter_done) {
             onModeClick(IMGMode.FILTER);
+            if (mCurrBitmap != mOriginalBitmap) {
+                mCurrBitmap.recycle();
+            }
+            mCurrBitmap = mImgView.getImageBitmap();
+            mRSTool.setBitmap(mCurrBitmap);
         } else if (vid == R.id.btn_filter_cancel) {
             mFilterGroup.check(R.id.btn_origin);
             onModeClick(IMGMode.FILTER);
         } else if (vid == R.id.btn_enhance_done) {
             onModeClick(IMGMode.ENHANCE);
+            mRSTool.setBitmap(mCurrBitmap);
+            resetEnhance();
         } else if (vid == R.id.btn_enhance_cancel) {
             resetEnhance();
             onModeClick(IMGMode.ENHANCE);
@@ -205,11 +212,18 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
             mImageUpdateDisposable.dispose();
         }
         mImageUpdateDisposable = Single.create((SingleOnSubscribe<Bitmap>) emitter -> {
-            Bitmap bitmap = mRSTool.blur(EnhanceMode.BLUR.getParam(), mEnhanceBitmap);
-//            Bitmap bitmap = mRSTool.brightnessContrast(EnhanceMode.BRIGHTNESS.getParam(), EnhanceMode.CONTRAST.getParam(), mEnhanceBitmap);
+//            Bitmap bitmap = mRSTool.blur(EnhanceMode.BLUR.getParam(), mEnhanceBitmap);
+//            Bitmap bitmap = mRSTool.brightness(EnhanceMode.BRIGHTNESS.getParam(), EnhanceMode.CONTRAST.getParam(), mEnhanceBitmap);
+//            Bitmap bitmap = mRSTool.contrast(EnhanceMode.BRIGHTNESS.getParam(), EnhanceMode.CONTRAST.getParam(), mEnhanceBitmap);
 //            Bitmap bitmap = mRSTool.saturation(EnhanceMode.SATURATION.getParam(), mEnhanceBitmap);
 //            Bitmap bitmap = mRSTool.hue(EnhanceMode.HUE.getParam(), mEnhanceBitmap);
 //            Bitmap bitmap = mRSTool.emboss(EnhanceMode.EMBOSS.getParam(), mEnhanceBitmap);
+            Bitmap bitmap = mRSTool.enhance(
+                    EnhanceMode.BRIGHTNESS.getParam(),
+                    EnhanceMode.CONTRAST.getParam(),
+                    EnhanceMode.SATURATION.getParam(),
+                    EnhanceMode.HUE.getParam()
+            );
             emitter.onSuccess(bitmap);
         })
                 .subscribeOn(Schedulers.io())
@@ -219,6 +233,12 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
                     mCurrBitmap = bitmap;
                     mImgView.setImageBitmap(bitmap);
                 }, Throwable::printStackTrace);
+    }
+
+    private void resetCurrentEnhance() {
+        mEnhanceMode.resetParam();
+        mEnhanceSeekBar.setProgress(mEnhanceMode.getProgressFromParam());
+        updateImage();
     }
 
     private void resetEnhance() {
@@ -232,24 +252,27 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
     }
 
     private final RadioGroup.OnCheckedChangeListener mFilterChangeListener = (group, checkedId) -> {
-        if (mCurrBitmap != mOriginalBitmap) {
-            mCurrBitmap.recycle();
+        if (mImgView.getImageBitmap() != mCurrBitmap) {
+            mImgView.getImageBitmap().recycle();
         }
 
+        Bitmap bitmap = null;
         if (checkedId == R.id.btn_origin) {
-            mCurrBitmap = mOriginalBitmap;
+            bitmap = mCurrBitmap;
         } else if (checkedId == R.id.btn_grayscale) {
-            mCurrBitmap = mRSTool.grayscale();
+            bitmap = mRSTool.grayscale();
         } else if (checkedId == R.id.btn_black_gold) {
-            mCurrBitmap = mRSTool.blackGold();
+            bitmap = mRSTool.blackGold();
         } else if (checkedId == R.id.btn_invert) {
-            mCurrBitmap = mRSTool.invert();
+            bitmap = mRSTool.invert();
         } else if (checkedId == R.id.btn_nostalgia) {
-            mCurrBitmap = mRSTool.nostalgia();
+            bitmap = mRSTool.nostalgia();
         } else if (checkedId == R.id.btn_comic) {
-            mCurrBitmap = mRSTool.comic();
+            bitmap = mRSTool.comic();
+        } else if (checkedId == R.id.btn_emboss) {
+            bitmap = mRSTool.emboss(0.6f);
         }
-        mImgView.setImageBitmap(mCurrBitmap);
+        mImgView.setImageBitmap(bitmap);
     };
 
     private final RadioGroup.OnCheckedChangeListener mEnhanceChangeListener = (group, checkedId) -> {
@@ -263,8 +286,6 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
             mEnhanceMode = EnhanceMode.HUE;
         } else if (checkedId == R.id.btn_blur) {
             mEnhanceMode = EnhanceMode.BLUR;
-        } else if (checkedId == R.id.btn_emboss) {
-            mEnhanceMode = EnhanceMode.EMBOSS;
         }
         mEnhanceSeekBar.setProgress(mEnhanceMode.getProgressFromParam());
     };
