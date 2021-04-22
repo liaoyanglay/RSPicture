@@ -4,8 +4,10 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.renderscript.*
+import com.dizzylay.rspicture.rs.ScriptC_BezierCurve
 import com.dizzylay.rspicture.rs.ScriptC_Enhance
 import com.dizzylay.rspicture.rs.ScriptC_Filter
+import com.dizzylay.rspicture.rs.ScriptC_HistogramEqualizer
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -17,8 +19,10 @@ import kotlin.math.sin
 class RSTool(context: Context, bitmap: Bitmap? = null) {
 
     private val rs: RenderScript = RenderScript.create(context)
-    private val scriptFilter = ScriptC_Filter(rs)
-    private val scriptEnhance = ScriptC_Enhance(rs)
+    private val scriptFilter by lazy { ScriptC_Filter(rs) }
+    private val scriptEnhance by lazy { ScriptC_Enhance(rs) }
+    private val scriptHistEq by lazy { ScriptC_HistogramEqualizer(rs) }
+    private val scriptBezierCurve by lazy { ScriptC_BezierCurve(rs) }
     private lateinit var mBitmap: Bitmap
     private var mWidth: Int = 0
     private var mHeight: Int = 0
@@ -46,9 +50,8 @@ class RSTool(context: Context, bitmap: Bitmap? = null) {
         if (::allocationOut.isInitialized) {
             allocationOut.destroy()
         }
-        val temp = Bitmap.createBitmap(mWidth, mHeight, bitmap.config)
         allocationIn = Allocation.createFromBitmap(rs, bitmap)
-        allocationOut = Allocation.createFromBitmap(rs, temp)
+        allocationOut = Allocation.createTyped(rs, allocationIn.type)
     }
 
     @JvmOverloads
@@ -83,12 +86,16 @@ class RSTool(context: Context, bitmap: Bitmap? = null) {
             canvas.drawBitmap(mBitmap, 0f, 0f, null)
             return retBitmap
         }
-        val scriptBlur = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs))
-        scriptBlur.setInput(allocationIn)
-        scriptBlur.setRadius(radius)
-        scriptBlur.forEach(allocationOut)
+        blur(radius, allocationIn, allocationOut)
         allocationOut.copyTo(retBitmap)
         return retBitmap
+    }
+
+    private fun blur(radius: Float, aIn: Allocation, aOut: Allocation) {
+        val scriptBlur = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs))
+        scriptBlur.setInput(aIn)
+        scriptBlur.setRadius(radius)
+        scriptBlur.forEach(aOut)
     }
 
     @JvmOverloads
@@ -147,7 +154,7 @@ class RSTool(context: Context, bitmap: Bitmap? = null) {
     }
 
     @JvmOverloads
-    fun emboss(value: Float, outBitmap: Bitmap? = null): Bitmap {
+    fun emboss(value: Float = 0.5f, outBitmap: Bitmap? = null): Bitmap {
         val retBitmap = outBitmap ?: Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888)
         val scriptConvolve = ScriptIntrinsicConvolve5x5.create(rs, Element.U8_4(rs))
         val f1 = value
@@ -190,16 +197,46 @@ class RSTool(context: Context, bitmap: Bitmap? = null) {
         bright: Float,
         contrast: Float,
         saturation: Float,
-        hue: Float,
+        hue: Float = 0f,
+        blur: Float = 0f,
         outBitmap: Bitmap? = null
     ): Bitmap {
         val retBitmap = outBitmap ?: Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888)
-        val tmp = Allocation.createFromBitmap(rs, retBitmap)
+        var aOut = allocationOut
         scriptEnhance._BrightnessFactor = bright
         scriptEnhance._ContrastFactor = contrast
         scriptEnhance._SaturationFactor = saturation
-        scriptEnhance.invoke_enhance(allocationIn, tmp)
-        hue(hue, tmp, allocationOut)
+        scriptEnhance.invoke_enhance(allocationIn, aOut)
+        if (hue != 0f) {
+            val tmpOut = Allocation.createTyped(rs, aOut.type)
+            hue(hue, aOut, tmpOut)
+            aOut = tmpOut
+        }
+        if (blur != 0f) {
+            val tmpOut = Allocation.createTyped(rs, aOut.type)
+            blur(blur, aOut, tmpOut)
+            aOut = tmpOut
+        }
+        aOut.copyTo(retBitmap)
+        return retBitmap
+    }
+
+    @JvmOverloads
+    fun histEqY(outBitmap: Bitmap? = null): Bitmap {
+        val retBitmap = outBitmap ?: Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888)
+        val tmpOut = Allocation.createTyped(rs, allocationOut.type)
+        scriptHistEq._size = mWidth * mHeight
+        scriptHistEq.forEach_root(allocationIn, tmpOut)
+        scriptHistEq.invoke_createRemapArray()
+        scriptHistEq.forEach_remaptoRGB(tmpOut, allocationOut)
+        allocationOut.copyTo(retBitmap)
+        return retBitmap
+    }
+
+    @JvmOverloads
+    fun bezierCurve(outBitmap: Bitmap? = null): Bitmap {
+        val retBitmap = outBitmap ?: Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888)
+        scriptBezierCurve.forEach_root(allocationIn, allocationOut)
         allocationOut.copyTo(retBitmap)
         return retBitmap
     }
