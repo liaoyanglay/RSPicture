@@ -1,11 +1,15 @@
 package me.minetsh.imaging;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.ViewSwitcher;
@@ -16,6 +20,7 @@ import io.reactivex.rxjava3.core.SingleOnSubscribe;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import me.minetsh.imaging.core.IMGMode;
+import me.minetsh.imaging.core.IMGPath;
 import me.minetsh.imaging.core.IMGText;
 import me.minetsh.imaging.rs.EnhanceMode;
 import me.minetsh.imaging.rs.RSTool;
@@ -29,13 +34,13 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
     protected IMGView mImgView;
     protected Bitmap mOriginalBitmap;
     protected Bitmap mCurrBitmap;
-    private Bitmap mEnhanceBitmap;
 
     private RSTool mRSTool;
 
     private RadioGroup mModeGroup;
     private IMGColorGroup mColorGroup;
     private IMGTextEditDialog mTextDialog;
+    private SeekBar mDoodleSeekBar;
     private View mLayoutOpSub;
     private ViewSwitcher mOpSwitcher, mOpSubSwitcher;
     private View mLayoutFilter;
@@ -44,6 +49,8 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
     private RadioGroup mEnhanceGroup;
     private SeekBar mEnhanceSeekBar;
     private HorizontalScrollView mEnhanceScrollView;
+    private Button mOriginCompareButton;
+    private ImageView mImgOrigin;
 
     private EnhanceMode mEnhanceMode;
 
@@ -66,7 +73,6 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
             mCurrBitmap = mOriginalBitmap.copy(mOriginalBitmap.getConfig(), true);
             mImgView.setImageBitmap(mCurrBitmap);
             mRSTool = new RSTool(this, mCurrBitmap);
-            mEnhanceBitmap = Bitmap.createBitmap(mCurrBitmap.getWidth(), mCurrBitmap.getHeight(), mCurrBitmap.getConfig());
             resetEnhanceParam();
         } else finish();
     }
@@ -77,12 +83,14 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
         super.onDestroy();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void initViews() {
         mImgView = findViewById(R.id.image_canvas);
         mModeGroup = findViewById(R.id.rg_modes);
         mOpSwitcher = findViewById(R.id.vs_op);
         mOpSubSwitcher = findViewById(R.id.vs_op_sub);
         mColorGroup = findViewById(R.id.cg_colors);
+        mDoodleSeekBar = findViewById(R.id.skb_doodle);
         mLayoutOpSub = findViewById(R.id.layout_op_sub);
         mLayoutFilter = findViewById(R.id.layout_filter);
         mFilterGroup = findViewById(R.id.rg_filters);
@@ -90,11 +98,36 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
         mEnhanceGroup = findViewById(R.id.rg_enhance);
         mEnhanceSeekBar = findViewById(R.id.skb_enhance);
         mEnhanceScrollView = findViewById(R.id.scroll_enhance);
+        mOriginCompareButton = findViewById(R.id.btn_origin_compare);
+        mImgOrigin = findViewById(R.id.image_origin);
 
         mColorGroup.setOnCheckedChangeListener(this);
         mFilterGroup.setOnCheckedChangeListener(mFilterChangeListener);
         mEnhanceGroup.setOnCheckedChangeListener(mEnhanceChangeListener);
         mEnhanceSeekBar.setOnSeekBarChangeListener(this);
+        mDoodleSeekBar.setOnSeekBarChangeListener(this);
+        mDoodleSeekBar.setProgress((int) (mImgView.getPenWidth() / (IMGPath.MAX_WIDTH - IMGPath.MIN_WIDTH) * 100));
+        mOriginCompareButton.setOnTouchListener((v, event) -> {
+            int action = event.getAction();
+            if (action == MotionEvent.ACTION_DOWN) {
+                mImgOrigin.setImageBitmap(mOriginalBitmap);
+                mImgOrigin.setVisibility(View.VISIBLE);
+                mImgView.setVisibility(View.INVISIBLE);
+                v.setPressed(true);
+            } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                mImgOrigin.setVisibility(View.GONE);
+                mImgView.setVisibility(View.VISIBLE);
+                v.setPressed(false);
+            }
+            return true;
+        });
+        mImgView.setOnClickListener(v -> {
+            if (mImgView.getMode() == IMGMode.NONE
+                    || mImgView.getMode() == IMGMode.DOODLE
+                    || mImgView.getMode() == IMGMode.MOSAIC) {
+                mOpSwitcher.setVisibility(mOpSwitcher.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE);
+            }
+        });
     }
 
     @Override
@@ -145,6 +178,8 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
             resetEnhance();
         } else if (vid == R.id.tv_enhance_reset) {
             resetEnhance();
+        } else if (vid == R.id.btn_enhance_reset) {
+            resetCurrentEnhance();
         }
     }
 
@@ -194,9 +229,13 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        if (fromUser) {
-            mEnhanceMode.updateParamFromProgress(progress);
-            updateImage();
+        if (seekBar == mEnhanceSeekBar) {
+            if (fromUser) {
+                mEnhanceMode.updateParamFromProgress(progress);
+                updateImage();
+            }
+        } else if (seekBar == mDoodleSeekBar) {
+            mImgView.setPenWidth(progress / 100f * (IMGPath.MAX_WIDTH - IMGPath.MIN_WIDTH) + IMGPath.MIN_WIDTH);
         }
     }
 
@@ -225,7 +264,6 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(bitmap -> {
-                    mEnhanceBitmap = mCurrBitmap;
                     mCurrBitmap = bitmap;
                     mImgView.setImageBitmap(bitmap);
                 }, Throwable::printStackTrace);
@@ -299,9 +337,11 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
     public void setOpSubDisplay(int opSub) {
         if (opSub < 0) {
             mLayoutOpSub.setVisibility(View.GONE);
+            mDoodleSeekBar.setVisibility(View.GONE);
         } else {
             mOpSubSwitcher.setDisplayedChild(opSub);
             mLayoutOpSub.setVisibility(View.VISIBLE);
+            mDoodleSeekBar.setVisibility(View.VISIBLE);
         }
     }
 

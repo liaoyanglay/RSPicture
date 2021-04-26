@@ -14,15 +14,15 @@ public class IMGPath {
 
     protected Path path;
 
-    private int color = Color.RED;
+    private int color;
 
-    private float width = BASE_MOSAIC_WIDTH;
+    private float width;
 
-    private IMGMode mode = IMGMode.DOODLE;
+    private IMGMode mode;
 
-    public static final float BASE_DOODLE_WIDTH = 20f;
-
-    public static final float BASE_MOSAIC_WIDTH = 72f;
+    public static final float BASE_WIDTH = 12f;
+    public static final float MIN_WIDTH = 1f;
+    public static final float MAX_WIDTH = 30f;
 
     public IMGPath() {
         this(new Path());
@@ -37,7 +37,7 @@ public class IMGPath {
     }
 
     public IMGPath(Path path, IMGMode mode, int color) {
-        this(path, mode, color, BASE_MOSAIC_WIDTH);
+        this(path, mode, color, BASE_WIDTH);
     }
 
     public IMGPath(Path path, IMGMode mode, int color, float width) {
@@ -85,8 +85,7 @@ public class IMGPath {
     public void onDrawDoodle(Canvas canvas, Paint paint) {
         if (mode == IMGMode.DOODLE) {
             paint.setColor(color);
-            paint.setStrokeWidth(BASE_DOODLE_WIDTH);
-            // rewind
+            paint.setStrokeWidth(width);
             canvas.drawPath(path, paint);
         }
     }

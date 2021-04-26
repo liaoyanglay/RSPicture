@@ -14,12 +14,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RSPicture">
+        <activity android:name=".ui.ShareActivity"/>
         <activity
             android:name=".ui.PictureActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_picture"
             android:theme="@style/Theme.RSPicture.Fullscreen" />
-
         <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

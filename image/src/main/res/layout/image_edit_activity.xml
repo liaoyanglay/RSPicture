@@ -9,6 +9,14 @@
         android:layout_height="match_parent"
         android:background="#000" />
 
+    <ImageView
+        android:id="@+id/image_origin"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000"
+        android:contentDescription="@string/image_original_picture"
+        android:visibility="gone" />
+
     <ViewSwitcher
         android:id="@+id/vs_op"
         android:layout_width="match_parent"

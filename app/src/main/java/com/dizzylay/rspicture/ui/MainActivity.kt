@@ -29,6 +29,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var photoOutputPath: String
     private lateinit var mBinding: ActivityMainBinding
 
+    private val imgSavePath by lazy { File(externalCacheDir, "result.jpg").path }
+
+
     private companion object {
         // Used to load the 'native-lib' library on application startup.
 //        init {
@@ -122,18 +125,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun cropPhoto(inputUri: Uri) {
         val file = File(Environment.getExternalStorageDirectory().path, "_crop_image.jpg")
-//        val file = File(externalCacheDir, "_crop_image.jpg")
         photoOutputPath = file.path
         if (file.exists()) {
             file.delete()
         }
 
         val outputUri = Uri.fromFile(file)
-//        val outputUri = FileProvider.getUriForFile(this, FILE_PROVIDER_AUTHORITY, file)
         val cropPhotoIntent = Intent("com.android.camera.action.CROP")
         cropPhotoIntent.setDataAndType(inputUri, "image/*")
         cropPhotoIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-//        cropPhotoIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
 
         cropPhotoIntent.putExtra("crop", "true")
         cropPhotoIntent.putExtra("scale", true)
@@ -151,7 +151,7 @@ class MainActivity : AppCompatActivity() {
         when (requestCode) {
             REQ_PERMISSION_TAKE_PHOTO -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    startCamera();
+                    startCamera()
                 } else {
                     ToastUtil.makeShort(this, "拍照权限被拒绝")
                 }
@@ -180,7 +180,7 @@ class MainActivity : AppCompatActivity() {
                             .putExtra(IMGEditActivity.EXTRA_IMAGE_PATH, imagePath)
                             .putExtra(
                                 IMGEditActivity.EXTRA_IMAGE_SAVE_PATH,
-                                File(externalCacheDir, UUID.randomUUID().toString() + ".jpg").path
+                                imgSavePath
                             ),
                         REQ_IMAGE_EDIT
                     )
@@ -210,12 +210,8 @@ class MainActivity : AppCompatActivity() {
             }
             REQ_IMAGE_EDIT -> {
                 ToastUtil.makeShort(this, "图片编辑完成")
+                ShareActivity.start(this, imgSavePath)
             }
         }
-//        if (imagePath != null) {
-//            PictureActivity.start(this, imagePath!!)
-//        } else {
-//            ToastUtil.makeShort(this, "error")
-//        }
     }
 }

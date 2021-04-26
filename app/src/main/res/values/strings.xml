@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">RSPicture</string>
     <string name="title_activity_picture">PictureActivity</string>
+    <string name="save">保存</string>
+    <string name="share">分享</string>
 </resources>

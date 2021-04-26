@@ -42,7 +42,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
 
     private IMGMode mPreMode = IMGMode.NONE;
 
-    private IMGImage mImage = new IMGImage();
+    private final IMGImage mImage = new IMGImage();
 
     private GestureDetector mGDetector;
 
@@ -50,32 +50,24 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
 
     private IMGHomingAnimator mHomingAnimator;
 
-    private Pen mPen = new Pen();
+    private final Pen mPen = new Pen();
 
     private int mPointerCount = 0;
 
-    private Paint mDoodlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint mDoodlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    private Paint mMosaicPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private int mLastAction;
 
     private static final boolean DEBUG = false;
 
     {
         // 涂鸦画刷
         mDoodlePaint.setStyle(Paint.Style.STROKE);
-        mDoodlePaint.setStrokeWidth(IMGPath.BASE_DOODLE_WIDTH);
+        mDoodlePaint.setStrokeWidth(IMGPath.BASE_WIDTH);
         mDoodlePaint.setColor(Color.RED);
-        mDoodlePaint.setPathEffect(new CornerPathEffect(IMGPath.BASE_DOODLE_WIDTH));
+        mDoodlePaint.setPathEffect(new CornerPathEffect(IMGPath.BASE_WIDTH));
         mDoodlePaint.setStrokeCap(Paint.Cap.ROUND);
         mDoodlePaint.setStrokeJoin(Paint.Join.ROUND);
-
-        // 马赛克画刷
-        mMosaicPaint.setStyle(Paint.Style.STROKE);
-        mMosaicPaint.setStrokeWidth(IMGPath.BASE_MOSAIC_WIDTH);
-        mMosaicPaint.setColor(Color.BLACK);
-        mMosaicPaint.setPathEffect(new CornerPathEffect(IMGPath.BASE_MOSAIC_WIDTH));
-        mMosaicPaint.setStrokeCap(Paint.Cap.ROUND);
-        mMosaicPaint.setStrokeJoin(Paint.Join.ROUND);
     }
 
     public IMGView(Context context) {
@@ -176,6 +168,14 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
         mPen.setColor(color);
     }
 
+    public float getPenWidth() {
+        return mPen.getWidth();
+    }
+
+    public void setPenWidth(float width) {
+        mPen.setWidth(width);
+    }
+
     public boolean isDoodleEmpty() {
         return mImage.isDoodleEmpty();
     }
@@ -217,7 +217,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
         if (!mImage.isMosaicEmpty() || (mImage.getMode() == IMGMode.MOSAIC && !mPen.isEmpty())) {
             int count = mImage.onDrawMosaicsPath(canvas);
             if (mImage.getMode() == IMGMode.MOSAIC && !mPen.isEmpty()) {
-                mDoodlePaint.setStrokeWidth(IMGPath.BASE_MOSAIC_WIDTH);
+                mDoodlePaint.setStrokeWidth(mPen.getWidth() * mImage.getScale());
                 canvas.save();
                 RectF frame = mImage.getClipFrame();
                 canvas.rotate(-mImage.getRotate(), frame.centerX(), frame.centerY());
@@ -232,7 +232,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
         mImage.onDrawDoodles(canvas);
         if (mImage.getMode() == IMGMode.DOODLE && !mPen.isEmpty()) {
             mDoodlePaint.setColor(mPen.getColor());
-            mDoodlePaint.setStrokeWidth(IMGPath.BASE_DOODLE_WIDTH * mImage.getScale());
+            mDoodlePaint.setStrokeWidth(mPen.getWidth() * mImage.getScale());
             canvas.save();
             RectF frame = mImage.getClipFrame();
             canvas.rotate(-mImage.getRotate(), frame.centerX(), frame.centerY());
@@ -359,15 +359,18 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
                 removeCallbacks(this);
                 break;
             case MotionEvent.ACTION_UP:
+                if (mLastAction == MotionEvent.ACTION_DOWN) {
+                    return callOnClick();
+                }
             case MotionEvent.ACTION_CANCEL:
                 postDelayed(this, 1200);
                 break;
         }
+        mLastAction = event.getActionMasked();
         return onTouch(event);
     }
 
     boolean onTouch(MotionEvent event) {
-
         if (isHoming()) {
             // Homing
             return false;
@@ -382,7 +385,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
         if (mode == IMGMode.NONE || mode == IMGMode.CLIP) {
             handled |= onTouchNONE(event);
         } else if (mPointerCount > 1) {
-            onPathDone();
+            onPathCancel();
             handled |= onTouchNONE(event);
         } else {
             handled |= onTouchPath(event);
@@ -422,6 +425,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
 
     private boolean onPathBegin(MotionEvent event) {
         mPen.reset(event.getX(), event.getY());
+        mPen.lineTo(event.getX(), event.getY());
         mPen.setIdentity(event.getPointerId(0));
         return true;
     }
@@ -443,6 +447,11 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
         mPen.reset();
         invalidate();
         return true;
+    }
+
+    private void onPathCancel() {
+        mPen.reset();
+        invalidate();
     }
 
     @Override

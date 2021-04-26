@@ -1,21 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_enhance"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/image_color_black_trans"
     android:orientation="vertical">
 
-    <SeekBar
-        android:id="@+id/skb_enhance"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginHorizontal="50dp"
-        android:layout_marginTop="12dp"
-        android:progressTint="@color/image_color_accent"
-        android:thumbTint="@color/image_color_accent" />
+        android:layout_height="wrap_content">
+
+        <SeekBar
+            android:id="@+id/skb_enhance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="56dp"
+            android:paddingVertical="12dp"
+            android:progressTint="@color/image_color_accent"
+            android:thumbTint="@color/image_color_accent" />
+
+        <ImageButton
+            android:id="@+id/btn_enhance_reset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="20dp"
+            android:background="@null"
+            android:onClick="onClick"
+            android:padding="8dp"
+            android:src="@drawable/image_btn_undo" />
+
+    </FrameLayout>
 
     <HorizontalScrollView
         android:id="@+id/scroll_enhance"
@@ -31,7 +47,6 @@
             android:gravity="center"
             android:orientation="horizontal"
             android:paddingStart="@dimen/image_filter_space"
-            android:paddingTop="12dp"
             android:paddingEnd="@dimen/image_filter_space">
 
             <RadioButton
