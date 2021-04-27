@@ -155,6 +155,8 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
             onResetClipClick();
         } else if (vid == R.id.ib_clip_rotate) {
             onRotateClipClick();
+        } else if (vid == R.id.ib_clip_flip) {
+            mImgView.doFlip();
         } else if (vid == R.id.btn_filter) {
             onModeClick(IMGMode.FILTER);
         } else if (vid == R.id.btn_enhance) {

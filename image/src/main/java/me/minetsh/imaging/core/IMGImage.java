@@ -12,14 +12,14 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.minetsh.imaging.core.clip.IMGClip;
 import me.minetsh.imaging.core.clip.IMGClipWindow;
 import me.minetsh.imaging.core.homing.IMGHoming;
 import me.minetsh.imaging.core.sticker.IMGSticker;
 import me.minetsh.imaging.core.util.IMGUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by felix on 2017/11/21 下午10:03.
@@ -149,19 +149,24 @@ public class IMGImage {
     }
 
     public void setBitmap(Bitmap bitmap) {
+        setBitmap(bitmap, true);
+    }
+
+    public void setBitmap(Bitmap bitmap, boolean isMakeMosaic) {
         if (bitmap == null || bitmap.isRecycled()) {
             return;
         }
 
-        this.mImage = bitmap;
-
-        // 清空马赛克图层
         if (mMosaicImage != null) {
             mMosaicImage.recycle();
         }
-        this.mMosaicImage = null;
 
-        makeMosaicBitmap();
+        this.mMosaicImage = null;
+        this.mImage = bitmap;
+
+        if (isMakeMosaic) {
+            makeMosaicBitmap();
+        }
 
         onImageChanged();
     }
@@ -517,8 +522,10 @@ public class IMGImage {
         // 裁剪区域
         canvas.clipRect(mClipWin.isClipping() ? mFrame : mClipFrame);
 
-        // 绘制图片
-        canvas.drawBitmap(mImage, null, mFrame, null);
+        if (mImage != null && !mImage.isRecycled()) {
+            // 绘制图片
+            canvas.drawBitmap(mImage, null, mFrame, null);
+        }
 
         if (DEBUG) {
             // Clip 区域

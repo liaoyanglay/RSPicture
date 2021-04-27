@@ -94,11 +94,20 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
         invalidate();
     }
 
+    public void setImageBitmap(Bitmap image, boolean isMakeMosaic) {
+        mImage.setBitmap(image, isMakeMosaic);
+        invalidate();
+    }
+
     public Bitmap getImageBitmap() {
         return mImage.getBitmap();
     }
 
     public void setMode(IMGMode mode) {
+        setMode(mode, true);
+    }
+
+    public void setMode(IMGMode mode, boolean isHoming) {
         // 保存现在的编辑模式
         mPreMode = mImage.getMode();
 
@@ -107,7 +116,9 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
         mPen.setMode(mode);
 
         // 矫正区域
-        onHoming();
+        if (isHoming) {
+            onHoming();
+        }
     }
 
     /**
@@ -146,6 +157,10 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
             mImage.rotate(-90);
             onHoming();
         }
+    }
+
+    public void doFlip() {
+        // TODO flip
     }
 
     public void resetClip() {
@@ -360,6 +375,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
                 break;
             case MotionEvent.ACTION_UP:
                 if (mLastAction == MotionEvent.ACTION_DOWN) {
+                    onPathCancel();
                     return callOnClick();
                 }
             case MotionEvent.ACTION_CANCEL:

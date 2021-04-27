@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.DrawingActivity">
+
+    <me.minetsh.imaging.view.IMGView
+        android:id="@+id/image_canvas"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000"
+        tools:background="#FFF" />
+
+    <androidx.constraintlayout.helper.widget.Layer
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/image_bg_top"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="20dp"
+        app:constraint_referenced_ids="tv_cancel, tv_done"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="onCancelClick"
+        android:text="@string/image_cancel"
+        android:textColor="@color/image_color_primary"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="onDoneClick"
+        android:text="@string/image_done"
+        android:textColor="@color/image_color_accent"
+        android:textSize="16sp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <SeekBar
+        android:id="@+id/skb_doodle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="72dp"
+        android:paddingVertical="10dp"
+        android:progressTint="@color/image_color_accent"
+        android:thumbTint="@color/image_color_accent"
+        app:layout_constraintBottom_toTopOf="@id/layout_colors"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/layout_colors"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#10000000"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <me.minetsh.imaging.view.IMGColorGroup
+            android:id="@+id/cg_colors"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:checkedButton="@+id/cr_red"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <me.minetsh.imaging.view.IMGColorRadio
+                android:id="@+id/cr_red"
+                android:layout_width="@dimen/image_color"
+                android:layout_height="@dimen/image_color"
+                android:layout_margin="@dimen/image_color_margin"
+                android:button="@null"
+                app:image_color="@color/image_color_red" />
+
+            <me.minetsh.imaging.view.IMGColorRadio
+                android:layout_width="@dimen/image_color"
+                android:layout_height="@dimen/image_color"
+                android:layout_margin="@dimen/image_color_margin"
+                app:image_color="@color/image_color_black" />
+
+            <me.minetsh.imaging.view.IMGColorRadio
+                android:layout_width="@dimen/image_color"
+                android:layout_height="@dimen/image_color"
+                android:layout_margin="@dimen/image_color_margin"
+                app:image_color="@color/image_color_white" />
+
+            <me.minetsh.imaging.view.IMGColorRadio
+                android:layout_width="@dimen/image_color"
+                android:layout_height="@dimen/image_color"
+                android:layout_margin="@dimen/image_color_margin"
+                app:image_color="@color/image_color_cyan" />
+
+            <me.minetsh.imaging.view.IMGColorRadio
+                android:layout_width="@dimen/image_color"
+                android:layout_height="@dimen/image_color"
+                android:layout_margin="@dimen/image_color_margin"
+                app:image_color="@color/image_color_yellow" />
+
+            <me.minetsh.imaging.view.IMGColorRadio
+                android:layout_width="@dimen/image_color"
+                android:layout_height="@dimen/image_color"
+                android:layout_margin="@dimen/image_color_margin"
+                app:image_color="@color/image_color_blue" />
+
+        </me.minetsh.imaging.view.IMGColorGroup>
+
+        <ImageButton
+            android:id="@+id/btn_undo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:contentDescription="@string/image_undo"
+            android:onClick="onUndoClick"
+            android:padding="8dp"
+            android:src="@drawable/image_btn_undo" />
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_drawing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="tv_cancel, tv_done, skb_doodle, layout_colors" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

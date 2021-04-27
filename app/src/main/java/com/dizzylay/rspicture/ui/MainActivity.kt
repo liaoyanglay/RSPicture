@@ -119,8 +119,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startDraw() {
-        // TODO("Not yet implemented")
-        PictureActivity.start(this, "")
+        startActivity(Intent(this, DrawingActivity::class.java))
     }
 
     private fun cropPhoto(inputUri: Uri) {
@@ -209,7 +208,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             REQ_IMAGE_EDIT -> {
-                ToastUtil.makeShort(this, "图片编辑完成")
                 ShareActivity.start(this, imgSavePath)
             }
         }
