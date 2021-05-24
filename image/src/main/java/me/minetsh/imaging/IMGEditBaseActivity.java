@@ -162,27 +162,47 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
         } else if (vid == R.id.btn_enhance) {
             onModeClick(IMGMode.ENHANCE);
         } else if (vid == R.id.btn_filter_done) {
-            onModeClick(IMGMode.FILTER);
-            if (mCurrBitmap != mOriginalBitmap) {
-                mCurrBitmap.recycle();
-            }
-            mCurrBitmap = mImgView.getImageBitmap();
-            mRSTool.setBitmap(mCurrBitmap);
+            onFilterDone();
         } else if (vid == R.id.btn_filter_cancel) {
-            mFilterGroup.check(R.id.btn_origin);
-            onModeClick(IMGMode.FILTER);
+            onFilterCancel();
         } else if (vid == R.id.btn_enhance_done) {
-            onModeClick(IMGMode.ENHANCE);
-            mRSTool.setBitmap(mCurrBitmap);
-            resetEnhanceParam();
+            onEnhanceDone();
         } else if (vid == R.id.btn_enhance_cancel) {
-            onModeClick(IMGMode.ENHANCE);
-            resetEnhance();
+            onEnhanceCancel();
         } else if (vid == R.id.tv_enhance_reset) {
             resetEnhance();
         } else if (vid == R.id.btn_enhance_reset) {
             resetCurrentEnhance();
         }
+    }
+
+    private void onFilterDone() {
+        onModeClick(IMGMode.FILTER);
+        if (mCurrBitmap == mImgView.getImageBitmap()) {
+            return;
+        }
+        if (mCurrBitmap != mOriginalBitmap) {
+            mCurrBitmap.recycle();
+        }
+        mCurrBitmap = mImgView.getImageBitmap();
+        mRSTool.setBitmap(mCurrBitmap);
+        mFilterGroup.check(R.id.btn_origin);
+    }
+
+    private void onFilterCancel() {
+        mFilterGroup.check(R.id.btn_origin);
+        onModeClick(IMGMode.FILTER);
+    }
+
+    private void onEnhanceDone() {
+        onModeClick(IMGMode.ENHANCE);
+        mRSTool.setBitmap(mCurrBitmap);
+        resetEnhanceParam();
+    }
+
+    private void onEnhanceCancel() {
+        onModeClick(IMGMode.ENHANCE);
+        resetEnhance();
     }
 
     public void updateModeUI() {
@@ -311,6 +331,7 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
             bitmap = mRSTool.emboss();
         } else if (checkedId == R.id.btn_auto_enhance) {
             bitmap = mRSTool.bezierCurve();
+//            bitmap = mRSTool.surfaceBlur();
         }
         mImgView.setImageBitmap(bitmap);
     };
@@ -409,9 +430,11 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
         if (mImgView.getMode() == IMGMode.CLIP) {
             onCancelClipClick();
             return;
-        }
-        if (mImgView.getMode() == IMGMode.FILTER || mImgView.getMode() == IMGMode.ENHANCE) {
-            onModeClick(mImgView.getMode());
+        } else if (mImgView.getMode() == IMGMode.FILTER) {
+            onFilterCancel();
+            return;
+        } else if (mImgView.getMode() == IMGMode.ENHANCE) {
+            onEnhanceCancel();
             return;
         }
         super.onBackPressed();

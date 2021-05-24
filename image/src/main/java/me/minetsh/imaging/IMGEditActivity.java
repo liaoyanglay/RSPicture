@@ -20,8 +20,8 @@ import java.io.IOException;
 
 public class IMGEditActivity extends IMGEditBaseActivity {
 
-    private static final int MAX_WIDTH = 1024;
-    private static final int MAX_HEIGHT = 1024;
+    private static final int MAX_WIDTH = 960;
+    private static final int MAX_HEIGHT = 960;
 
     public static final String EXTRA_IMAGE_URI = "IMAGE_URI";
     public static final String EXTRA_IMAGE_PATH = "IMAGE_PATH";

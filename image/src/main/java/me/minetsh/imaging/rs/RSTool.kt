@@ -4,10 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.renderscript.*
-import com.dizzylay.rspicture.rs.ScriptC_BezierCurve
-import com.dizzylay.rspicture.rs.ScriptC_Enhance
-import com.dizzylay.rspicture.rs.ScriptC_Filter
-import com.dizzylay.rspicture.rs.ScriptC_HistogramEqualizer
+import com.dizzylay.rspicture.rs.*
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -23,6 +20,7 @@ class RSTool(context: Context, bitmap: Bitmap? = null) {
     private val scriptEnhance by lazy { ScriptC_Enhance(rs) }
     private val scriptHistEq by lazy { ScriptC_HistogramEqualizer(rs) }
     private val scriptBezierCurve by lazy { ScriptC_BezierCurve(rs) }
+    private val scriptSurfaceBlur by lazy { ScriptC_SurfaceBlur(rs) }
     private lateinit var mBitmap: Bitmap
     private var mWidth: Int = 0
     private var mHeight: Int = 0
@@ -237,6 +235,17 @@ class RSTool(context: Context, bitmap: Bitmap? = null) {
     fun bezierCurve(outBitmap: Bitmap? = null): Bitmap {
         val retBitmap = outBitmap ?: Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888)
         scriptBezierCurve.forEach_root(allocationIn, allocationOut)
+        allocationOut.copyTo(retBitmap)
+        return retBitmap
+    }
+
+    @JvmOverloads
+    fun surfaceBlur(outBitmap: Bitmap? = null): Bitmap {
+        val retBitmap = outBitmap ?: Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888)
+        scriptSurfaceBlur._inputAllocation = allocationIn
+        scriptSurfaceBlur._radius = 8
+        scriptSurfaceBlur._weight = 40f
+        scriptSurfaceBlur.forEach_magnify(allocationIn, allocationOut)
         allocationOut.copyTo(retBitmap)
         return retBitmap
     }

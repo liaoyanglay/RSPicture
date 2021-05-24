@@ -7,11 +7,11 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.os.FileUtils
 import android.provider.MediaStore
 import android.text.TextUtils
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import com.dizzylay.rspicture.R
 import com.dizzylay.rspicture.databinding.ActivityShareBinding
 import com.dizzylay.rspicture.util.ToastUtil
 import java.io.File
@@ -53,7 +53,7 @@ class ShareActivity : AppCompatActivity() {
             val shareIntent = Intent(Intent.ACTION_SEND)
             val uri = FileProvider.getUriForFile(
                 this,
-                "com.dizzylay.rspicture.fileprovider",
+                getString(R.string.provider_name),
                 File(path!!)
             )
             shareIntent.type = "image/*"
@@ -83,7 +83,7 @@ class ShareActivity : AppCompatActivity() {
         }
         if (fos != null) {
             val fis = File(path).inputStream()
-            FileUtils.copy(fis, fos)
+            fis.copyTo(fos)
             fis.close()
             fos.close()
         }

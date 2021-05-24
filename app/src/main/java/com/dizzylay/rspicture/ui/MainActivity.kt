@@ -14,12 +14,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.dizzylay.rspicture.R
 import com.dizzylay.rspicture.databinding.ActivityMainBinding
 import com.dizzylay.rspicture.util.FileUtil
 import com.dizzylay.rspicture.util.ToastUtil
 import me.minetsh.imaging.IMGEditActivity
 import java.io.File
-import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -30,7 +30,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mBinding: ActivityMainBinding
 
     private val imgSavePath by lazy { File(externalCacheDir, "result.jpg").path }
-
 
     private companion object {
         // Used to load the 'native-lib' library on application startup.
@@ -45,8 +44,6 @@ class MainActivity : AppCompatActivity() {
         const val REQ_TAKE_PHOTO: Int = 1
         const val REQ_IMAGE_CROP: Int = 2
         const val REQ_IMAGE_EDIT: Int = 3
-
-        const val FILE_PROVIDER_AUTHORITY = "com.dizzylay.rspicture.fileprovider"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,7 +104,7 @@ class MainActivity : AppCompatActivity() {
         photoPath = file.path
 
         photoUri = if (Build.VERSION.SDK_INT >= 24) {
-            FileProvider.getUriForFile(this, FILE_PROVIDER_AUTHORITY, file)
+            FileProvider.getUriForFile(this, getString(R.string.provider_name), file)
         } else {
             Uri.fromFile(file)
         }
@@ -193,7 +190,7 @@ class MainActivity : AppCompatActivity() {
                         .putExtra(IMGEditActivity.EXTRA_IMAGE_PATH, photoPath)
                         .putExtra(
                             IMGEditActivity.EXTRA_IMAGE_SAVE_PATH,
-                            File(externalCacheDir, UUID.randomUUID().toString() + ".jpg").path
+                            imgSavePath
                         ),
                     REQ_IMAGE_EDIT
                 )

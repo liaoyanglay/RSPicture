@@ -1,5 +1,8 @@
 <resources>
-    <string name="app_name">RSPicture</string>
+    <string name="app_name_release">RSPicture</string>
+    <string name="app_name_debug">RSPicture_debug</string>
+    <string name="provider_name_release">com.dizzylay.rspicture.fileprovider</string>
+    <string name="provider_name_debug">com.dizzylay.rspicture.debug.fileprovider</string>
     <string name="title_activity_picture">PictureActivity</string>
     <string name="save">保存</string>
     <string name="share">分享</string>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="image_enhance_ic_width">24dp</dimen>
+    <dimen name="image_enhance_ic_height">24dp</dimen>
+    <dimen name="image_enhance_ic_padding_bottom">10dp</dimen>
+</resources>

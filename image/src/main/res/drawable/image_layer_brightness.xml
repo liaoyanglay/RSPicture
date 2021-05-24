@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:width="@dimen/image_enhance_ic_width"
+        android:height="@dimen/image_enhance_ic_height"
+        android:bottom="@dimen/image_enhance_ic_padding_bottom"
+        android:drawable="@drawable/image_ic_brightness"
+        android:gravity="center" />
+</layer-list>

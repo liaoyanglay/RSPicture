@@ -28,7 +28,7 @@
     <string name="image_saturation">饱和度</string>
     <string name="image_hue">色调</string>
     <string name="image_emboss">浮雕</string>
-    <string name="image_auto_enhance">一键美化</string>
+    <string name="image_bright_color">鲜艳</string>
     <string name="image_flip">翻转</string>
 
 </resources>

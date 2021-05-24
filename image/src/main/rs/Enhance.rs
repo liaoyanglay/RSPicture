@@ -34,7 +34,7 @@ uchar4 RS_KERNEL contrastProcess(uchar4 in) {
     float3 f3 = f4.rgb;
 
 	// Modifiy contrast (multiplication)
- 	if (ContrastFactor1 != 1.0f){
+ 	if (ContrastFactor1 != 1.0f) {
 	    // Transform to range [-0.5f, 0.5f]
 	    f3 = f3 - 0.5f;
 	    // Multiply contrast factor
@@ -48,7 +48,7 @@ uchar4 RS_KERNEL contrastProcess(uchar4 in) {
 }
 
 void contrast(rs_allocation in, rs_allocation out) {
-	ContrastFactor1  = (1.0f + ContrastFactor) * (1.0f + ContrastFactor);
+	ContrastFactor1 = (1.0f + ContrastFactor) * (1.0f + ContrastFactor);
     rsForEach(contrastProcess, in, out);
 }
 

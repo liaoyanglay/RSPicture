@@ -33,7 +33,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.dizzylay.rspicture.fileprovider"
+            android:authorities="@string/provider_name"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

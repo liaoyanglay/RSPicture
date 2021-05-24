@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_filter"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -27,7 +26,7 @@
                 android:id="@+id/btn_origin"
                 android:layout_width="81dp"
                 android:layout_height="81dp"
-                android:background="@drawable/img_filter_example"
+                android:background="@drawable/thumbnail_origin"
                 android:button="@null"
                 android:foreground="@drawable/image_bg_filter_button"
                 android:gravity="bottom|center_horizontal"
@@ -45,12 +44,12 @@
                 android:id="@+id/btn_auto_enhance"
                 android:layout_width="81dp"
                 android:layout_height="81dp"
-                android:background="@drawable/img_filter_example"
+                android:background="@drawable/thumbnail_origin"
                 android:button="@null"
                 android:foreground="@drawable/image_bg_filter_button"
                 android:gravity="bottom|center_horizontal"
                 android:padding="4dp"
-                android:text="@string/image_auto_enhance"
+                android:text="@string/image_bright_color"
                 android:textColor="@color/image_color_white"
                 android:textSize="13sp"
                 android:textStyle="bold" />
@@ -63,7 +62,7 @@
                 android:id="@+id/btn_grayscale"
                 android:layout_width="81dp"
                 android:layout_height="81dp"
-                android:background="@drawable/img_filter_example"
+                android:background="@drawable/thumbnail_grayscale"
                 android:button="@null"
                 android:foreground="@drawable/image_bg_filter_button"
                 android:gravity="bottom|center_horizontal"
@@ -81,7 +80,7 @@
                 android:id="@+id/btn_black_gold"
                 android:layout_width="81dp"
                 android:layout_height="81dp"
-                android:background="@drawable/img_filter_example"
+                android:background="@drawable/thumbnail_black_gold"
                 android:button="@null"
                 android:foreground="@drawable/image_bg_filter_button"
                 android:gravity="bottom|center_horizontal"
@@ -96,28 +95,10 @@
                 android:layout_height="wrap_content" />
 
             <RadioButton
-                android:id="@+id/btn_invert"
-                android:layout_width="81dp"
-                android:layout_height="81dp"
-                android:background="@drawable/img_filter_example"
-                android:button="@null"
-                android:foreground="@drawable/image_bg_filter_button"
-                android:gravity="bottom|center_horizontal"
-                android:padding="4dp"
-                android:text="@string/image_invert"
-                android:textColor="@color/image_color_white"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-            <Space
-                android:layout_width="@dimen/image_filter_space"
-                android:layout_height="wrap_content" />
-
-            <RadioButton
                 android:id="@+id/btn_nostalgia"
                 android:layout_width="81dp"
                 android:layout_height="81dp"
-                android:background="@drawable/img_filter_example"
+                android:background="@drawable/thumbnail_nostalgia"
                 android:button="@null"
                 android:foreground="@drawable/image_bg_filter_button"
                 android:gravity="bottom|center_horizontal"
@@ -135,7 +116,7 @@
                 android:id="@+id/btn_comic"
                 android:layout_width="81dp"
                 android:layout_height="81dp"
-                android:background="@drawable/img_filter_example"
+                android:background="@drawable/thumbnail_comic"
                 android:button="@null"
                 android:foreground="@drawable/image_bg_filter_button"
                 android:gravity="bottom|center_horizontal"
@@ -153,12 +134,30 @@
                 android:id="@+id/btn_emboss"
                 android:layout_width="81dp"
                 android:layout_height="81dp"
-                android:background="@drawable/img_filter_example"
+                android:background="@drawable/thumbnail_emboss"
                 android:button="@null"
                 android:foreground="@drawable/image_bg_filter_button"
                 android:gravity="bottom|center_horizontal"
                 android:padding="4dp"
                 android:text="@string/image_emboss"
+                android:textColor="@color/image_color_white"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <Space
+                android:layout_width="@dimen/image_filter_space"
+                android:layout_height="wrap_content" />
+
+            <RadioButton
+                android:id="@+id/btn_invert"
+                android:layout_width="81dp"
+                android:layout_height="81dp"
+                android:background="@drawable/thumbnail_invert"
+                android:button="@null"
+                android:foreground="@drawable/image_bg_filter_button"
+                android:gravity="bottom|center_horizontal"
+                android:padding="4dp"
+                android:text="@string/image_invert"
                 android:textColor="@color/image_color_white"
                 android:textSize="13sp"
                 android:textStyle="bold" />
