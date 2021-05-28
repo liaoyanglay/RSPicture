@@ -223,6 +223,7 @@ class RSTool(context: Context, bitmap: Bitmap? = null) {
     fun histEqY(outBitmap: Bitmap? = null): Bitmap {
         val retBitmap = outBitmap ?: Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888)
         val tmpOut = Allocation.createTyped(rs, allocationOut.type)
+        scriptHistEq.invoke_clear()
         scriptHistEq._size = mWidth * mHeight
         scriptHistEq.forEach_root(allocationIn, tmpOut)
         scriptHistEq.invoke_createRemapArray()
@@ -242,9 +243,11 @@ class RSTool(context: Context, bitmap: Bitmap? = null) {
     @JvmOverloads
     fun surfaceBlur(outBitmap: Bitmap? = null): Bitmap {
         val retBitmap = outBitmap ?: Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888)
+        scriptSurfaceBlur._gWidth = mWidth
+        scriptSurfaceBlur._gHeight = mHeight
         scriptSurfaceBlur._inputAllocation = allocationIn
-        scriptSurfaceBlur._radius = 8
-        scriptSurfaceBlur._weight = 40f
+        scriptSurfaceBlur._radius = 5
+        scriptSurfaceBlur._weight = 30f
         scriptSurfaceBlur.forEach_magnify(allocationIn, allocationOut)
         allocationOut.copyTo(retBitmap)
         return retBitmap

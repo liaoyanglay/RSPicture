@@ -4,11 +4,16 @@
 
 rs_allocation inputAllocation;
 
+int gWidth = 0;
+int gHeight = 0;
 int radius = 0;
 float weight = 0;  // 0-260f
 uchar4 result = 0;
 
 uchar4 RS_KERNEL magnify(uchar4 in, int x, int y) {
+    if (x < radius || x >= gWidth - radius || y < radius || y >= gHeight - radius) {
+        return in;
+    }
     int total=(2*radius+1)*(2*radius+1);
     float Rdenominator=0;
     float Gdenominator=0;

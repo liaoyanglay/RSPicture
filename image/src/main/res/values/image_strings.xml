@@ -30,5 +30,7 @@
     <string name="image_emboss">浮雕</string>
     <string name="image_bright_color">鲜艳</string>
     <string name="image_flip">翻转</string>
+    <string name="image_histeq">亮度均衡</string>
+    <string name="image_surface_blur">表面模糊</string>
 
 </resources>

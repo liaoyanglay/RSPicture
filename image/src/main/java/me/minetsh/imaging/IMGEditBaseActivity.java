@@ -329,9 +329,12 @@ abstract class IMGEditBaseActivity extends Activity implements View.OnClickListe
             bitmap = mRSTool.comic();
         } else if (checkedId == R.id.btn_emboss) {
             bitmap = mRSTool.emboss();
-        } else if (checkedId == R.id.btn_auto_enhance) {
+        } else if (checkedId == R.id.btn_bezier_curve) {
             bitmap = mRSTool.bezierCurve();
-//            bitmap = mRSTool.surfaceBlur();
+        } else if (checkedId == R.id.btn_histeq) {
+            bitmap = mRSTool.histEqY();
+        } else if (checkedId == R.id.btn_surface_blur) {
+            bitmap = mRSTool.surfaceBlur();
         }
         mImgView.setImageBitmap(bitmap);
     };

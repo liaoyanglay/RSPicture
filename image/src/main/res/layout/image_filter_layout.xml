@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content" />
 
             <RadioButton
-                android:id="@+id/btn_auto_enhance"
+                android:id="@+id/btn_bezier_curve"
                 android:layout_width="81dp"
                 android:layout_height="81dp"
                 android:background="@drawable/thumbnail_origin"
@@ -158,6 +158,42 @@
                 android:gravity="bottom|center_horizontal"
                 android:padding="4dp"
                 android:text="@string/image_invert"
+                android:textColor="@color/image_color_white"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <Space
+                android:layout_width="@dimen/image_filter_space"
+                android:layout_height="wrap_content" />
+
+            <RadioButton
+                android:id="@+id/btn_histeq"
+                android:layout_width="81dp"
+                android:layout_height="81dp"
+                android:background="@drawable/thumbnail_origin"
+                android:button="@null"
+                android:foreground="@drawable/image_bg_filter_button"
+                android:gravity="bottom|center_horizontal"
+                android:padding="4dp"
+                android:text="@string/image_histeq"
+                android:textColor="@color/image_color_white"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <Space
+                android:layout_width="@dimen/image_filter_space"
+                android:layout_height="wrap_content" />
+
+            <RadioButton
+                android:id="@+id/btn_surface_blur"
+                android:layout_width="81dp"
+                android:layout_height="81dp"
+                android:background="@drawable/thumbnail_origin"
+                android:button="@null"
+                android:foreground="@drawable/image_bg_filter_button"
+                android:gravity="bottom|center_horizontal"
+                android:padding="4dp"
+                android:text="@string/image_surface_blur"
                 android:textColor="@color/image_color_white"
                 android:textSize="13sp"
                 android:textStyle="bold" />

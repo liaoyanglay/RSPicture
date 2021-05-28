@@ -8,7 +8,7 @@ int32_t histo[256];
 float remapArray[256];
 int size;
 
-void init() {
+void clear() {
     // init the array with zeros
     for (int i = 0; i < 256; i++) {
         histo[i] = 0;
